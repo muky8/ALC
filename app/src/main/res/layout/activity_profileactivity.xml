@@ -33,7 +33,7 @@
             <ImageView
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:src="@drawable/kucing"
+                android:src="@drawable/img"
                 android:id="@+id/profilepic"
                 android:layout_marginTop="32dp"
                 />
@@ -59,7 +59,7 @@
                 android:gravity="center"
                 android:layout_marginTop="16dp"
                 android:text="Profile "
-                android:id="@+id/avatarurl" />
+                android:id="@+id/profileurl" />
 
             <Button
                 android:layout_width="157dp"

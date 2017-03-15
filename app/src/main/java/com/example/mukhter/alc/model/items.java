@@ -1,4 +1,4 @@
-package com.example.mukhter.alc;
+package com.example.mukhter.alc.model;
 
 /**
  * Created by MUKHTER on 14/03/2017.
@@ -7,7 +7,15 @@ package com.example.mukhter.alc;
 public class items {
     private  String login;
     private  String Imageavatar;
+    private String profileurl;
 
+    public String getProfileurl() {
+        return profileurl;
+    }
+
+    public void setProfileurl(String profileurl) {
+        this.profileurl = profileurl;
+    }
 
     public items(){
 

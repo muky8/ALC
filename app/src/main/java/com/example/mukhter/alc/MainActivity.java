@@ -1,7 +1,6 @@
 package com.example.mukhter.alc;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
@@ -10,23 +9,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
+import com.example.mukhter.alc.model.items;
+import com.example.mukhter.alc.model.profilemodel;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,8 +30,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
-import static android.R.id.content;
-
 public class MainActivity extends AppCompatActivity {
     ListView listView;
     ArrayList<String> titles = new ArrayList<>();
@@ -51,24 +39,29 @@ public class MainActivity extends AppCompatActivity {
     JSONObject jsonpart;
     JSONArray array;
     String avatar;
-    String name;
     ProgressDialog dialog;
     SharedPreferences sharedPreferences;
-
+String profdata;
+    TextView avatarr;
+    ImageView imageView;
+    TextView loginname ,profileurl;
 
 itemsAdapter itemsadapt;
-    ArrayList<items> itemsarraylist = new ArrayList<>();
+    ArrayList<com.example.mukhter.alc.model.items>
+            itemsarraylist = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        imageView=(ImageView)findViewById(R.id.profilepic);
 
+        profileurl=(TextView) findViewById(R.id.profileurl);
         listView = (ListView) findViewById(R.id.listview);
-itemsarraylist = new ArrayList<items>();
+             itemsarraylist = new ArrayList<items>();
 
+        dialog = new ProgressDialog(this);
 
-        dialog = new ProgressDialog(MainActivity.this);
         DownloadTask task = new DownloadTask();
         try {
             task.execute("https://api.github.com/search/users?q=+language:java+location:lagos");
@@ -76,7 +69,7 @@ itemsarraylist = new ArrayList<items>();
             e.printStackTrace();
         }
 
- itemsadapt=new itemsAdapter(getApplicationContext(),R.layout.listing2,itemsarraylist);
+         itemsadapt=new itemsAdapter(getApplicationContext(),R.layout.listing2,itemsarraylist);
         listView.setAdapter(itemsadapt);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -130,11 +123,13 @@ itemsarraylist = new ArrayList<items>();
                 array = new JSONArray(items);
                 for (int i = 0; i < array.length(); i++) {
                     items itemmodel = new items();
+                    profilemodel pm = new profilemodel();
                     jsonpart = array.getJSONObject(i);  //helps you get specific values
                     itemmodel.setLogin(jsonpart.getString("login"));
                     itemmodel.setImageavatar(jsonpart.getString("avatar_url"));
-
                      itemsarraylist.add(itemmodel);
+
+
                 }
                 return true;
 

@@ -47,48 +47,14 @@ public void share(View view){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profileactivity);
 imageView=(ImageView)findViewById(R.id.profilepic);
-        try {
-
-            Picasso .with(this).load("https://avatars1.githubusercontent.com/u/8110201?v=3").into(imageView);
-
-        }catch (Exception e){
-            e.printStackTrace();
-
-        }
-
         loginname = (TextView) findViewById(R.id.loginname);
         avatarurll=(TextView) findViewById(R.id.avatarurl);
-        requestQueue= Volley.newRequestQueue(this);
 
-        JsonObjectRequest jsonObjectRequest =new JsonObjectRequest(Request.Method.GET,
-                "https://api.github.com/search/users?q=language:Java%20location:Lagos",
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            JSONArray jsonArray = response.getJSONArray("items");
-
-                            for (int i=0; i<jsonArray.length();i++){
-                                JSONObject item = jsonArray.getJSONObject(i);
-                                String login = item.getString("login");
-                                String avatarurl = item.getString("avatar_url");
-                                loginname.setText(login);
-                                avatarurll.setText(avatarurl);
-
-
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.i("Error","Error!!!");
-            }
+        DownloadTask task = new DownloadTask();
+        try {
+            task.execute("https://api.github.com/search/users?q=+language:java+location:lagos");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        );
-        requestQueue.add(jsonObjectRequest);
-
     }
 }

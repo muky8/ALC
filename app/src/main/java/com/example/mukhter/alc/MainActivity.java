@@ -11,11 +11,15 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -51,40 +55,44 @@ public class MainActivity extends AppCompatActivity {
     ProgressDialog dialog;
     SharedPreferences sharedPreferences;
 
+
+itemsAdapter itemsadapt;
+    ArrayList<items> itemsarraylist = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         listView = (ListView) findViewById(R.id.listview);
+itemsarraylist = new ArrayList<items>();
 
 
         dialog = new ProgressDialog(MainActivity.this);
         DownloadTask task = new DownloadTask();
         try {
-            task.execute("https://api.github.com/search/users?q=language:java%20location:Lagos");
+            task.execute("https://api.github.com/search/users?q=+language:java+location:lagos");
         } catch (Exception e) {
             e.printStackTrace();
         }
-        sharedPreferences = this.getSharedPreferences("com.example.mukhter.alc", Context.MODE_PRIVATE);
-        arrayAdapter=new ArrayAdapter(this,android.R.layout.simple_expandable_list_item_1,titles);
-        listView.setAdapter(arrayAdapter);
+
+ itemsadapt=new itemsAdapter(getApplicationContext(),R.layout.listing2,itemsarraylist);
+        listView.setAdapter(itemsadapt);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getApplicationContext(), profileactivity.class);
-
                 startActivity(intent);
 
             }
         });
     }
 
-    public class DownloadTask extends AsyncTask<String, Void, String> {
+    public class DownloadTask extends AsyncTask<String, Void, Boolean> {
 
 
         @Override
-        protected String doInBackground(String... params) {
+        protected Boolean doInBackground(String... params) {
 
             String result = "";
 
@@ -121,23 +129,19 @@ public class MainActivity extends AppCompatActivity {
                 Log.i("", items);
                 array = new JSONArray(items);
                 for (int i = 0; i < array.length(); i++) {
+                    items itemmodel = new items();
                     jsonpart = array.getJSONObject(i);  //helps you get specific values
+                    itemmodel.setLogin(jsonpart.getString("login"));
+                    itemmodel.setImageavatar(jsonpart.getString("avatar_url"));
 
-                    Log.i("id", jsonpart.getString("id"));
-                    Log.i("login", jsonpart.getString("login"));
-                    avatar = jsonpart.getString("avatar_url");
-                    name = jsonpart.getString("login");
-                    titles.add(name);
-                    Log.d(name, "Output");
+                     itemsarraylist.add(itemmodel);
                 }
-                return items;
-
+                return true;
 
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
-                return String.valueOf(titles);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -146,20 +150,21 @@ public class MainActivity extends AppCompatActivity {
 
         protected void onPreExecute() {
             dialog.setMessage("Loading Developer's Info...");
-            dialog.setCancelable(true);
+            dialog.setCancelable(false);
             dialog.show();
         }
 
         @Override
-        protected void onPostExecute(String s) {
-            listView.setAdapter(arrayAdapter);
+        protected void onPostExecute(Boolean s) {
 
-            if (dialog != null && dialog.isShowing()) {
-                dialog.setMessage("DownLoading finished");
-                dialog.dismiss();
-            }
+
+         dialog.cancel();
+            itemsadapt.notifyDataSetChanged();
+
         }
+
     }
+
 
         }
 
